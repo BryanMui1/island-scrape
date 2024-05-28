@@ -145,13 +145,12 @@ people_touched = 0
 
 actions = ActionChains(driver)
 ctrl_click = ActionChains(driver)
-for i in range(5):
+for i in indxgood:
     # open the desired house
     houses = driver.find_elements(By.CLASS_NAME, "house")
     houses[i].click()
     driver.implicitly_wait(1)
     
-
     ### DO SOMETHING
 
     ## open the every person in the house
@@ -184,6 +183,8 @@ for i in range(5):
     actions.move_to_element(close).click().perform()
 
 # assert error checking that we touched everyone
+print(people_touched)
+print(pop_total)
 assert(people_touched == pop_total)
 
 
@@ -195,4 +196,3 @@ if __name__ == '__main__':
     print("Script runtime: " + str(datetime.timedelta(seconds=execution_time)))
     time.sleep(15)
     driver.close()
-    

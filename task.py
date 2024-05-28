@@ -56,12 +56,12 @@ buttons = []
 for j in cities:
     buttons.append(j.find_element(By.XPATH, './/div[starts-with(@class, "town town")]'))
 
-buttons[0].click()
+buttons[1].click()
 
 houses = driver.find_elements(By.CLASS_NAME, "house")
 ids = driver.find_elements(By.CLASS_NAME, "houseid")
 
-houses[0].click()
+houses[100].click()
 
 driver.implicitly_wait(3)
 
@@ -79,17 +79,38 @@ summary = driver.find_elements(By.XPATH, '//tr')
 header = driver.find_element(By.CLASS_NAME, "crumb").text.split()
 name = header[1] + " " + header[2]
 
-tmp = 0
-for element in summary:
-    print(str(tmp) + " " + element.text)
-    tmp+=1
-    
+
+## function to find a person's education status
+def get_education():
+    summary_string = ''
+    for element in summary:
+        summary_string += " " + element.text
+
+    if summary_string.find("University") != -1:
+        return "university"
+    elif summary_string.find("High School") != -1:
+        return "high school"
+    elif summary_string.find("Elementary School") != -1:
+        return "elementary school"
+    else:
+        return "none"
+
+
+for element in summary: print(element.text)
+
 
 age = summary[1].text.split()[0]
-income = summary[3].text[1:].replace(',', '')
-location = summary[4].text.split()
-island = location[2]
-housenum = location[3]
+
+temp = 0
+while summary[temp].text != "Parents":
+    if summary[temp].text.find("$") != -1:
+        income = summary[temp].text[1:].replace(',', '')
+    if summary[temp].text.find("Lives in") != -1:
+        location = summary[temp].text.split()
+        island = location[2]
+        housenum = location[3]
+    temp+=1
+
 
 print(name)
 print(age)
@@ -102,28 +123,32 @@ incomevec = []
 namevec = []
 islandvec = []
 housenumvec = []
+educationvec = []
 
 namevec.append(name)
 agevec.append(age)
 incomevec.append(income)
 islandvec.append(island)
 housenumvec.append(housenum)
+educationvec.append(get_education())
 
 
 data = pd.DataFrame(
     {
         "name": namevec,
         "age": agevec,
-        "gender": "uknown",
+        "gender": "unknown",
         "island": islandvec,
         "house": housenumvec,
-        "education_level": "idk",
-        "iq": 120,
+        "education_level": educationvec,
+        "iq": "unknown",
         "income": incomevec,
     }
 )
 
 print(data.head())
+
+
 
 if __name__ == '__main__':
     time.sleep(15)
