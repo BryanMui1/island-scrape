@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+### Module test for selenium login (NOT WORKING)
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options

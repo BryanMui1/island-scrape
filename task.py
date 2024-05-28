@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Example Task function that looks for the first person's profile and dumps out basic information about their name, age, village, etc.
+
 ################################################################################################################
 ## IMPORTS
 ################################################################################################################
