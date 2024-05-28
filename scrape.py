@@ -13,6 +13,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 
+import numpy as np
+import pandas as pd
+
 import time
 import datetime
 
@@ -186,7 +189,6 @@ for i in indxgood:
 print(people_touched)
 print(pop_total)
 assert(people_touched == pop_total)
-
 
 end_time = time.time()
 

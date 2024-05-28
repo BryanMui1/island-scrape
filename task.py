@@ -61,7 +61,7 @@ buttons[1].click()
 houses = driver.find_elements(By.CLASS_NAME, "house")
 ids = driver.find_elements(By.CLASS_NAME, "houseid")
 
-houses[100].click()
+houses[1].click()
 
 driver.implicitly_wait(3)
 
@@ -148,7 +148,7 @@ data = pd.DataFrame(
 
 print(data.head())
 
-
+data.to_csv('file1.csv')
 
 if __name__ == '__main__':
     time.sleep(15)
