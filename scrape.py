@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 ### sample code that introduces the foundation to build loopable scripts for testing and navigation of the islands experiment simulator
+### May or may not be working, but helpful to examine
 
 ################################################################################################################
 ## IMPORTS
 ################################################################################################################
-
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
