@@ -1,0 +1,8 @@
+# random sample program
+look for id obtain to get consent
+hash task result task and last element has "Britt consented to be in your study" or did not consent
+
+# collect tasks program
+hash the houses and the people
+look up that person 
+click the task or do something else

@@ -31,7 +31,7 @@ driver = webdriver.Chrome(options=chrome_options)
 
 driver.get("https://islands.smp.uq.edu.au/login.php")
 
-#driver.implicitly_wait(1)
+driver.implicitly_wait(1)
 
 email = driver.find_elements(by=By.TAG_NAME, value="input")
 
@@ -72,7 +72,7 @@ educationvec = []
 ## RUNTIME BODY
 ################################################################################################################
 
-for cityindex in range(5):
+for cityindex in range(NUM_CITIES):
     ## window check 1
     # Store the ID of the original window
     original_window = driver.current_window_handle
@@ -96,6 +96,7 @@ for cityindex in range(5):
     click_btn.move_to_element(buttons[cityindex])
     click_btn.click()
     click_btn.perform()
+    driver.implicitly_wait(1)
     
     ## window check 2
     # Store the ID of the original window
@@ -149,7 +150,7 @@ for cityindex in range(5):
 
     actions = ActionChains(driver)
     ctrl_click = ActionChains(driver)
-    for i in indxgood[0:5]:
+    for i in indxgood:
         # open the desired house
         houses = driver.find_elements(By.CLASS_NAME, "house")
         houses[i].click()
