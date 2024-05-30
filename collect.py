@@ -55,10 +55,16 @@ logURL = "https://islands.smp.uq.edu.au/index.php"
 assert(driver.current_url == logURL)
 
 ################################################################################################################
-## ENUMERATE CONSTANTS AND GLOBAL VARS
+## ENUMERATE CONSTANTS AND GLOBAL VARS(LOAD INDEX DATA TOO)
 ################################################################################################################
 
-SAMPLE_SIZE = 5
+# making dataframe  
+df = pd.read_csv("sample_index.csv") 
+city_index = df['city_index']
+sample_index = df['sample_index']
+person_index = df['person_index']
+
+SAMPLE_SIZE = len(df)
 people_sampled = 0
 
 cities = driver.find_elements(By.XPATH, '//a[starts-with(@href, "village")]')
@@ -70,17 +76,16 @@ for j in cities:
 
 assert(len(buttons) == NUM_CITIES)
 
-city = [] #rng_city
-housers = [] #SAMPLE_INDEX
-persons = [] #rng_person
+# enumerate datavectors
+# city = [] #rng_city
+# housers = [] #SAMPLE_INDEX
+# persons = [] #rng_person
 
 ################################################################################################################
 ## RUNTIME BODY
 ################################################################################################################
 
-while people_sampled < SAMPLE_SIZE:
-    # generate a random city
-    rng_city = np.random.randint(0, high=NUM_CITIES-1)
+for df_count in range(0, SAMPLE_SIZE):
 
     ## window check 1
     # Store the ID of the original window
@@ -102,7 +107,7 @@ while people_sampled < SAMPLE_SIZE:
     for j in cities:
         buttons.append(j.find_element(By.XPATH, './/div[starts-with(@class, "towndot towndot")]'))
     click_btn = ActionChains(driver)
-    click_btn.move_to_element(buttons[rng_city])
+    click_btn.move_to_element(buttons[city_index[df_count]])
     click_btn.click()
     click_btn.perform()
     
@@ -130,37 +135,6 @@ while people_sampled < SAMPLE_SIZE:
     houses = driver.find_elements(By.CLASS_NAME, "house")
 
     ids = driver.find_elements(By.CLASS_NAME, "houseid")
-
-    hashid = {}
-    trueindics = np.array(range(0, len(ids)))
-    houseids = np.array([id.text for id in ids])
-    setids = set(houseids)
-
-    for house, indic in zip(houseids, trueindics):
-        hashid[house] = int(indic)
-
-    ### find the number of houses 
-    NUM_HOUSES = houseids[-1]
-
-    ## choose a random house
-    # check that the house is valid with people
-    while True:
-        rng_house = np.random.randint(1, high=NUM_HOUSES)
-        if(str(rng_house) in setids):
-            print("sample " + str(rng_house))
-            break
-        else:
-            print("bruh")    
-
-    SAMPLE_INDEX = hashid[str(rng_house)]  
-
-    ##USELESS COMMENTS
-    # print(setids)
-    # rng = np.random.randint(1, high=NUM_HOUSES)
-    # print(rng)
-    # print(str(rng) in setids)
-    # print("house num " + rnghouse)
-    # print("index " + hashid)
  
     ################################################################################################################
     ## SCRAPE RESIDENT INFORMATION
@@ -172,41 +146,30 @@ while people_sampled < SAMPLE_SIZE:
 
     # open the desired house
 
-    houses[SAMPLE_INDEX].click()
+    houses[sample_index[df_count]].click()
  
     ##### TASK START #####
 
     ## open a random person
     resident_links = driver.find_elements(By.XPATH, '//a[starts-with(@href, "islander.php")]')
     num_residents = len(resident_links)
-    if num_residents == 0:
-        print("empty house")
-    else:
-        if num_residents == 1:
-            rng_person = 0
-        else:
-            rng_person = np.random.randint(low=0, high=num_residents-1)
-        resident_links[rng_person].click()
-        driver.implicitly_wait(1)
 
-            ### touch some fellas ###
-        isl = driver.find_element(By.ID, "title")
-        print("touched " + isl.text)
-        
-        tab = driver.find_element(By.ID, "t2tab")
-        obtain = driver.find_elements(By.ID, "obtain")
-        if len(obtain) > 0:
-            print("not obtained")
-        else:
-            print("obtained")
-        tab.click()
-            ### done touching people ###
+    resident_links[person_index[df_count]].click()
+    driver.implicitly_wait(1)
 
-        people_sampled += 1
+        ### touch some fellas ###
+    isl = driver.find_element(By.ID, "title")
+    print("touched " + isl.text)
+    
+    # tab = driver.find_element(By.ID, "t2tab")
+    # obtain = driver.find_elements(By.ID, "obtain")
+    # if len(obtain) > 0:
+    #     print("not obtained")
+    # else:
+    #     print("obtained")
+    # tab.click()
+        ### done touching people ###
 
-        city.append(rng_city) #rng_city
-        housers.append(SAMPLE_INDEX) #SAMPLE_INDEX
-        persons.append(rng_person) #rng_person
   
   
     ##### TASK END #####
@@ -226,17 +189,17 @@ while people_sampled < SAMPLE_SIZE:
     driver.implicitly_wait(3)
 ## Create data frame and write to csv
 
-data = pd.DataFrame(
-    {
-        "city_index": city,
-        "sample_index": housers,
-        "person_index": persons,
-    }
-)
+# data = pd.DataFrame(
+#     {
+#         "city_index": city,
+#         "sample_index": housers,
+#         "person_index": persons,
+#     }
+# )
 
-print(data.head())
+# print(data.head())
 
-data.to_csv('sample_index.csv')
+# data.to_csv('sample_index.csv')
 
 
 end_time = time.time()

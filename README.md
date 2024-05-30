@@ -7,4 +7,4 @@ Potential scripts(in the future):
 + A script that adds all your samples to a contact list 
 + A script that allows randomization of experiments 
 
-This project was built using Selenium and Python3
+This project was built using Selenium and Python3, and works with the integrated Chrome Web Driver
