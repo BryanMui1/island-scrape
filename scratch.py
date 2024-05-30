@@ -1,18 +1,29 @@
 #!/usr/bin/env python3
 
+import pickle
+
+cache_file = open(r'cache', 'rb')
+cache = pickle.load(cache_file)
+cache_file.close()
+
+print(len(cache))
+
+exit()
+
 import numpy as np
 
 rand = np.random.randint(1, high=10, size=10)
 
 print(rand)
 
-
-agevec = []
-incomevec = []
-namevec = []
-islandvec = []
-housenumvec = []
-educationvec = []
+name_vec = []
+age_vec = []
+gender_vec = []
+island_vec = []
+house_num_vec = []
+education_vec = []
+iq_vec = []
+income_vec = []
 
 ################################################################################################################
 ## TASK
@@ -79,15 +90,15 @@ while not summary[temp].text.isspace():
         housenum = location[3]
     temp+=1
 
-    ########## define gender
+########## define gender
 
-    ########## define iq
+########## define iq
 
-    print(name + " " + str(age) + " " + str(income) + " " + island + " " + str(housenum) + " " + get_education())      
+#print(name + " " + str(age) + " " + str(income) + " " + island + " " + str(housenum) + " " + get_education())      
 
-    namevec.append(name)
-    agevec.append(age)
-    incomevec.append(income)
-    islandvec.append(island)
-    housenumvec.append(housenum)
-    educationvec.append(get_education())
+namevec.append(name)
+agevec.append(age)
+incomevec.append(income)
+islandvec.append(island)
+housenumvec.append(housenum)
+educationvec.append(get_education())

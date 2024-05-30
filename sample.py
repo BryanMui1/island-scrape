@@ -24,6 +24,8 @@ import pandas as pd
 import time
 import datetime
 
+import pickle
+
 start_time = time.time()
 
 ################################################################################################################
@@ -54,11 +56,13 @@ logURL = "https://islands.smp.uq.edu.au/index.php"
 
 assert(driver.current_url == logURL)
 
+
+
 ################################################################################################################
 ## ENUMERATE CONSTANTS AND GLOBAL VARS
 ################################################################################################################
 
-SAMPLE_SIZE = 5
+SAMPLE_SIZE = 220
 people_sampled = 0
 
 cities = driver.find_elements(By.XPATH, '//a[starts-with(@href, "village")]')
@@ -73,6 +77,16 @@ assert(len(buttons) == NUM_CITIES)
 city = [] #rng_city
 housers = [] #SAMPLE_INDEX
 persons = [] #rng_person
+
+################################################################################################################
+## LOAD CACHE
+################################################################################################################
+
+cache_file = open(r'cache', 'rb')
+cache = pickle.load(cache_file)
+cache_file.close()
+# cache check assertion
+assert(len(cache) == NUM_CITIES)
 
 ################################################################################################################
 ## RUNTIME BODY
@@ -131,28 +145,22 @@ while people_sampled < SAMPLE_SIZE:
 
     ids = driver.find_elements(By.CLASS_NAME, "houseid")
 
-    hashid = {}
-    trueindics = np.array(range(0, len(ids)))
-    houseids = np.array([id.text for id in ids])
-    setids = set(houseids)
-
-    for house, indic in zip(houseids, trueindics):
-        hashid[house] = int(indic)
-
     ### find the number of houses 
-    NUM_HOUSES = houseids[-1]
+    NUM_HOUSES = list(cache[rng_city].keys())[-1]
+    setids = set(cache[rng_city].keys())
 
     ## choose a random house
     # check that the house is valid with people
     while True:
         rng_house = np.random.randint(1, high=NUM_HOUSES)
         if(str(rng_house) in setids):
-            print("sample " + str(rng_house))
+            print("sample house " + str(rng_house))
             break
         else:
-            print("bruh")    
+            print("Invalid House. resampling")    
 
-    SAMPLE_INDEX = hashid[str(rng_house)]  
+    SAMPLE_INDEX = cache[rng_city][str(rng_house)]
+
 
     ##USELESS COMMENTS
     # print(setids)
@@ -189,24 +197,51 @@ while people_sampled < SAMPLE_SIZE:
         resident_links[rng_person].click()
         driver.implicitly_wait(1)
 
-            ### touch some fellas ###
+
+
+            ### Start Tasking ###
         isl = driver.find_element(By.ID, "title")
         print("touched " + isl.text)
-        
-        tab = driver.find_element(By.ID, "t2tab")
-        obtain = driver.find_elements(By.ID, "obtain")
-        if len(obtain) > 0:
-            print("not obtained")
-        else:
-            print("obtained")
+
+        # check if their age is the right age range
+        tab = driver.find_element(By.ID, "t1tab")
         tab.click()
+        driver.implicitly_wait(3)
+        
+        summary = driver.find_elements(By.XPATH, '//tr')
+        ########## define age
+        age = int(summary[1].text.split()[0])
+
+        if(age >= 15 and age <= 64):
+            tab = driver.find_element(By.ID, "t2tab")
+            tab.click()
+            driver.implicitly_wait(3)
+            obtain = driver.find_elements(By.ID, "obtain")
+        
+            if len(obtain) > 0:
+                obtain = obtain[0].find_element(By.XPATH, '//a[starts-with(@href, "javascript:getConsent")]')
+                obtain.click()
+            
+            task_result = driver.find_elements(By.CLASS_NAME, "taskresulttask")
+            if(task_result[-1].text.find("consented") != -1):
+                print("consented")
+                # do something
+                tasks_recent = driver.find_element(By.ID, "tasksrecent")
+                iq_test = tasks_recent.find_element(By.XPATH, """//span[@onclick="startTask('iq'); return false;"]""")
+                iq_test.click()
+
+                city.append(rng_city) #rng_city
+                housers.append(SAMPLE_INDEX) #SAMPLE_INDEX
+                persons.append(rng_person) #rng_person
+
+                people_sampled += 1
+            else:
+                print("Person declined. sample again")
+        else:
+            print("incorrect age. sample again")
+
             ### done touching people ###
 
-        people_sampled += 1
-
-        city.append(rng_city) #rng_city
-        housers.append(SAMPLE_INDEX) #SAMPLE_INDEX
-        persons.append(rng_person) #rng_person
   
   
     ##### TASK END #####

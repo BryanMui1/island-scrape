@@ -76,10 +76,15 @@ for j in cities:
 
 assert(len(buttons) == NUM_CITIES)
 
-# enumerate datavectors
-# city = [] #rng_city
-# housers = [] #SAMPLE_INDEX
-# persons = [] #rng_person
+# make data vectors
+name_vec = []
+age_vec = []
+gender_vec = []
+island_vec = []
+house_num_vec = []
+education_vec = []
+iq_vec = []
+income_vec = []
 
 ################################################################################################################
 ## RUNTIME BODY
@@ -150,25 +155,117 @@ for df_count in range(0, SAMPLE_SIZE):
  
     ##### TASK START #####
 
-    ## open a random person
+    # initialize vars
+    name = "NA"
+    age = 0
+    gender = "NA"
+    island = "NA"
+    house_num = 0
+    education_level = "NA"
+    iq = 0
+    income = 0
+
+    ### format 
+    '''
+        "name": name_vec,
+        "age": age_vec,
+        "gender": gender_vec,
+        "island": island_vec,
+        "house_num": house_num_vec,
+        "education_level": education_vec,
+        "iq": "iq_vec,
+        "income": income_vec,
+    '''
+
+    ## open person
     resident_links = driver.find_elements(By.XPATH, '//a[starts-with(@href, "islander.php")]')
     num_residents = len(resident_links)
 
     resident_links[person_index[df_count]].click()
+    tab = driver.find_element(By.ID, "t1tab")
+    tab.click()
     driver.implicitly_wait(1)
 
-        ### touch some fellas ###
+        ### Perform Data Collection ###
     isl = driver.find_element(By.ID, "title")
     print("touched " + isl.text)
-    
-    # tab = driver.find_element(By.ID, "t2tab")
-    # obtain = driver.find_elements(By.ID, "obtain")
-    # if len(obtain) > 0:
-    #     print("not obtained")
-    # else:
-    #     print("obtained")
-    # tab.click()
-        ### done touching people ###
+
+    summary = driver.find_elements(By.XPATH, '//tr')
+    driver.implicitly_wait(1)
+    header = driver.find_element(By.CLASS_NAME, "crumb").text.split()
+    ########## define name
+    name = header[1] + " " + header[2]
+
+    ########## define education_level
+    ## function to find a person's education status
+    def get_education():
+        summary_string = ''
+        for element in summary:
+            summary_string += " " + element.text
+        if summary_string.find("University") != -1:
+            return "university"
+        elif summary_string.find("High School") != -1:
+            return "high school"
+        elif summary_string.find("Elementary School") != -1:
+            return "elementary school"
+        else:
+            return "none"
+    education_level = get_education() 
+
+    ########## define age
+    age = summary[1].text.split()[0]
+
+
+    ########## define income, island, housenum
+    temp = 0
+    while not summary[temp].text.isspace():
+        if summary[temp].text.find("$") != -1:
+            income = summary[temp].text[1:].replace(',', '')
+
+        if summary[temp].text.find("Lives in") != -1:
+            location = summary[temp].text.split()
+            island = location[2]
+            house_num = location[3]
+        temp+=1
+
+    ########## define iq
+    tab = driver.find_element(By.ID, "t2tab")
+    tab.click()
+
+    driver.implicitly_wait(3)
+ 
+    iq = driver.find_elements(By.CLASS_NAME, "taskresultresult")[0].text
+
+    ########## define gender
+    tab = driver.find_element(By.ID, "t3tab")
+    tab.click()
+    chatbox = driver.find_element(By.ID, "chatbox")
+    chatbox.send_keys("Are you male or female?")
+    submit_chat = driver.find_element(By.XPATH, '//button[@type="submit"]')
+    submit_chat.click()
+    driver.implicitly_wait(3)
+
+    response = driver.find_elements(By.CLASS_NAME, "chatbot")[-1].text
+    if response == "I am male.":
+        gender = "male"
+    if response == "I am female.":
+        gender = "female"
+    else:
+        print("gender failed.")
+
+
+    # append the data
+    name_vec.append(name)
+    age_vec.append(age)
+    gender_vec.append(gender)
+    island_vec.append(island)
+    house_num_vec.append(house_num)
+    education_vec.append(education_level)
+    iq_vec.append(iq)
+    income_vec.append(income)
+
+
+         ### Done Data Collection ###
 
   
   
@@ -189,17 +286,22 @@ for df_count in range(0, SAMPLE_SIZE):
     driver.implicitly_wait(3)
 ## Create data frame and write to csv
 
-# data = pd.DataFrame(
-#     {
-#         "city_index": city,
-#         "sample_index": housers,
-#         "person_index": persons,
-#     }
-# )
+data = pd.DataFrame(
+    {
+        "name": name_vec,
+        "age": age_vec,
+        "gender": gender_vec,
+        "island": island_vec,
+        "house_num": house_num_vec,
+        "education_level": education_vec,
+        "iq": iq_vec,
+        "income": income_vec,
+    }
+)
 
-# print(data.head())
+print(data.head())
 
-# data.to_csv('sample_index.csv')
+data.to_csv('data1.csv')
 
 
 end_time = time.time()
