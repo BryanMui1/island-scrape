@@ -78,7 +78,7 @@ for j in cities:
 buttons[0].click()
 driver.implicitly_wait(1)
 
-houses = driver.find_elements(By.CLASS_NAME, "house")
+
 #print(len(houses))
 
 
@@ -86,7 +86,6 @@ houses = driver.find_elements(By.CLASS_NAME, "house")
 #     id = house.find_element(By.CLASS_NAME, "houseid")
 #     print(id.text)
 
-ids = driver.find_elements(By.CLASS_NAME, "houseid")
 #print(len(ids))
 
 # for id in ids:
@@ -98,6 +97,10 @@ ids = driver.find_elements(By.CLASS_NAME, "houseid")
 ################################################################################################################
 ## ENUMERATE INDICES
 ################################################################################################################
+
+houses = driver.find_elements(By.CLASS_NAME, "house")
+
+ids = driver.find_elements(By.CLASS_NAME, "houseid")
 
 ### get rid of bad indices
 badindx = []
