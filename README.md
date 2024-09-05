@@ -2,6 +2,11 @@
 
 island-scrape is a scraping tool built for the statistical simulation website The Islands(https://islands.smp.uq.edu.au/login.php), it is a python script that allows researchers to automate sample collection. 
 
+
+![Collecting research samples from people](https://github.com/user-attachments/assets/ce564d7f-a93b-4b9a-9dd2-d892f7cdfdcb)
+
+![Map of the entire Island: There's a lot of cities and people!](https://github.com/user-attachments/assets/ab4bc1ce-92de-4c95-96b2-a75467515f53)
+
 ## Features include:  
 + ### sample.py - automated sample choosing and collection
 + ### collect.py - automated collection of experiment results
@@ -41,20 +46,17 @@ The data will be outputed into a file named **"data1.csv"** or can be chaneged t
 
 
 ## Outlines of this project:
-Useless Code:
 + scrape.py: building block instances that can navigate through the page
 + iter.py: navigates through a population on the islan and performs some task(that you implement)
 + scrath.py: development file for temporary code
 + login.py: building block for logging into the website
-Useful Code:
 + **cache.py, sample.py, sample.py** finalized working scripts for *fast* sampling and data collection
 + iter.py: basic iteration instance over all cities 
 + scrape.py: used for testing one instance of scraping your data collection task
 + test.py: a combination of scrape.py and iter.py
 
 
-
-Potential scripts(in the future):
+Potential updates(in the future):
 + A script that navigates through one's island contact list
 + A script that adds all your samples to a contact list 
 + A script that allows randomization of experiments 
